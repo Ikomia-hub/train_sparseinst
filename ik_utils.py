@@ -279,6 +279,8 @@ def setup_cfg(args, param):
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg.CLASS_NAMES)
     cfg.MODEL.RETINANET.NUM_CLASSES = len(cfg.CLASS_NAMES)
     cfg.MODEL.SPARSE_INST.NUM_CLASSES = len(cfg.CLASS_NAMES)
+    cfg.MODEL.SPARSE_INST.DECODER.NUM_CLASSES = len(cfg.CLASS_NAMES)
+    cfg.MODEL.SEM_SEG_HEAD = len(cfg.CLASS_NAMES)
     old_batch_size = cfg.SOLVER.IMS_PER_BATCH
     cfg.SOLVER.IMS_PER_BATCH = param.cfg["batch_size"]
     cfg.SOLVER.BASE_LR = cfg.SOLVER.BASE_LR * cfg.SOLVER.IMS_PER_BATCH / old_batch_size
