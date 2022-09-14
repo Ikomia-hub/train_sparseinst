@@ -92,7 +92,8 @@ class Trainer(DefaultTrainer):
                     self.after_step()
                     self.update_progress()
                     if self.iter % 20 == 0:
-                        self.log_metrics({name: value[0] for name, value in self.storage.latest().items()})
+                        self.log_metrics({name: value[0] for name, value in self.storage.latest().items()},
+                                         step= self.iter)
                 # self.iter == max_iter can be used by `after_train` to
                 # tell whether the training successfully finished or failed
                 # due to exceptions.
