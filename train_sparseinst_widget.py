@@ -72,7 +72,7 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
         layout_ptr = qtconversion.PyQtToQt(self.gridLayout)
 
         # Set widget layout
-        self.setLayout(layout_ptr)
+        self.set_layout(layout_ptr)
 
     def on_check_expert_mode(self, b):
         expert = self.check_expert_mode.isChecked()
@@ -85,7 +85,7 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
 
         self.browse_custom_cfg.setVisible(expert)
 
-    def onApply(self):
+    def on_apply(self):
         # Apply button clicked slot
 
         # Get parameters from widget
@@ -100,7 +100,7 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
         self.parameters.cfg["output_folder"] = self.browse_output_folder.path
         self.parameters.cfg["custom_cfg"] = self.browse_custom_cfg.path
         # Send signal to launch the process
-        self.emitApply(self.parameters)
+        self.emit_apply(self.parameters)
 
 
 # --------------------

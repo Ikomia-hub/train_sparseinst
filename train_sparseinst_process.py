@@ -50,7 +50,7 @@ class TrainSparseinstParam(TaskParam):
         self.cfg["output_folder"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "runs")
         self.cfg["custom_cfg"] = ""
 
-    def setParamMap(self, param_map):
+    def set_values(self, param_map):
         # Set parameters values from Ikomia application
         # Parameters values are stored as string and accessible like a python dict
         # Example : self.windowSize = int(param_map["windowSize"])
@@ -75,7 +75,7 @@ class TrainSparseinst(dnntrain.TrainProcess):
         dnntrain.TrainProcess.__init__(self, name, param)
 
         # Variable to check if the training must be stopped by user
-        self.output_folder = None
+        self.out_folder = None
         self.stop_train = False
         self.advancement = None
         self.iters_done = None
@@ -83,19 +83,19 @@ class TrainSparseinst(dnntrain.TrainProcess):
 
         # Create parameters class
         if param is None:
-            self.setParam(TrainSparseinstParam())
+            self.set_param_object(TrainSparseinstParam())
         else:
-            self.setParam(copy.deepcopy(param))
+            self.set_param_object(copy.deepcopy(param))
 
     def run(self):
         # Core function of your process
-        # Call beginTaskRun for initialization
-        self.beginTaskRun()
+        # Call begin_task_run for initialization
+        self.begin_task_run()
 
         # Get input :
-        input = self.getInput(0)
+        input = self.get_input(0)
         # Get parameters :
-        param = self.getParam()
+        param = self.get_param_object()
         plugin_folder = os.path.dirname(os.path.abspath(__file__))
 
         dataset = input.data
@@ -105,13 +105,13 @@ class TrainSparseinst(dnntrain.TrainProcess):
         str_datetime = datetime.now().strftime("%d-%m-%YT%Hh%Mm%Ss")
 
         # Output directory
-        self.output_folder = os.path.join(param.cfg["output_folder"], str_datetime)
+        self.out_folder = os.path.join(param.cfg["output_folder"], str_datetime)
 
         # Tensorboard
         tb_logdir = os.path.join(ikcfg.main_cfg["tensorboard"]["log_uri"], str_datetime)
 
-        if not os.path.isdir(self.output_folder):
-            os.makedirs(self.output_folder, exist_ok=True)
+        if not os.path.isdir(self.out_folder):
+            os.makedirs(self.out_folder, exist_ok=True)
 
         if not param.cfg["expert_mode"]:
             model_folder = os.path.join(plugin_folder, "models")
@@ -132,14 +132,14 @@ class TrainSparseinst(dnntrain.TrainProcess):
                     cfg = CfgNode.load_cfg(f.read())
             else:
                 print("File {} doesn't exist".format(param.cfg["custom_cfg"]))
-                self.endTaskRun()
+                self.end_task_run()
                 return
 
         self.advancement = 0
         self.iters_done = 0
         self.iters_todo = cfg.SOLVER.MAX_ITER
-        cfg.OUTPUT_DIR = self.output_folder
-        with open(os.path.join(self.output_folder, str_datetime+"_config.yaml"), 'w') as f:
+        cfg.OUTPUT_DIR = self.out_folder
+        with open(os.path.join(self.out_folder, str_datetime + "_config.yaml"), 'w') as f:
             f.write(cfg.dump())
 
         cfg.freeze()
@@ -148,10 +148,10 @@ class TrainSparseinst(dnntrain.TrainProcess):
         trainer.train()
 
         # Step progress bar:
-        self.emitStepProgress()
+        self.emit_step_progress()
 
-        # Call endTaskRun to finalize process
-        self.endTaskRun()
+        # Call end_task_run to finalize process
+        self.end_task_run()
 
     def get_stop(self):
         return self.stop_train
@@ -160,7 +160,7 @@ class TrainSparseinst(dnntrain.TrainProcess):
         super().stop()
         self.stop_train = True
 
-    def getProgressSteps(self, eltCount=1):
+    def get_progress_steps(self, eltCount=1):
         # Function returning the number of progress steps for this process
         # This is handled by the main progress bar of Ikomia application
         return 100
@@ -169,7 +169,7 @@ class TrainSparseinst(dnntrain.TrainProcess):
         self.iters_done += 1
         steps = range(self.advancement, int(100 * self.iters_done / self.iters_todo))
         for step in steps:
-            self.emitStepProgress()
+            self.emit_step_progress()
             self.advancement += 1
 
 # --------------------
@@ -182,13 +182,13 @@ class TrainSparseinstFactory(dataprocess.CTaskFactory):
         dataprocess.CTaskFactory.__init__(self)
         # Set process information as string here
         self.info.name = "train_sparseinst"
-        self.info.shortDescription = "Train Sparseinst instance segmentation models"
+        self.info.short_description = "Train Sparseinst instance segmentation models"
         self.info.description = "Train Sparseinst instance segmentation models"
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Segmentation"
-        self.info.iconPath = "icons/sparseinst.png"
-        self.info.version = "1.0.0"
-        # self.info.iconPath = "your path to a specific icon"
+        self.info.icon_path = "icons/sparseinst.png"
+        self.info.version = "1.1.0"
+        # self.info.icon_path = "your path to a specific icon"
         self.info.authors = "Cheng, Tianheng and Wang, Xinggang and Chen, Shaoyu and Zhang, Wenqiang and Zhang, " \
                             "Qian and Huang, Chang and Zhang, Zhaoxiang and Liu, Wenyu "
         self.info.article = "Sparse Instance Activation for Real-Time Instance Segmentation"
@@ -196,7 +196,7 @@ class TrainSparseinstFactory(dataprocess.CTaskFactory):
         self.info.year = 2022
         self.info.license = "MIT License"
         # URL of documentation
-        self.info.documentationLink = "https://github.com/hustvl/SparseInst#readme"
+        self.info.documentation_link = "https://github.com/hustvl/SparseInst#readme"
         # Code source repository
         self.info.repository = "https://github.com/hustvl/SparseInst"
         # Keywords used for search
