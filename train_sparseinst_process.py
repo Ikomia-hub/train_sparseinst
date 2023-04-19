@@ -44,11 +44,11 @@ class TrainSparseinstParam(TaskParam):
         self.cfg["batch_size"] = 2
         self.cfg["max_iter"] = 4000
         self.cfg["eval_period"] = 50
-        self.cfg["split"] = 0.9
-        self.cfg["conf_thr"] = 0.5
-        self.cfg["expert_mode"] = False
+        self.cfg["dataset_split_ratio"] = 0.9
+        self.cfg["conf_thres"] = 0.5
+        self.cfg["use_custom_model"] = False
         self.cfg["output_folder"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "runs")
-        self.cfg["custom_cfg"] = ""
+        self.cfg["config"] = ""
 
     def set_values(self, param_map):
         # Set parameters values from Ikomia application
@@ -58,11 +58,11 @@ class TrainSparseinstParam(TaskParam):
         self.cfg["batch_size"] = int(param_map["batch_size"])
         self.cfg["max_iter"] = int(param_map["max_iter"])
         self.cfg["eval_period"] = int(param_map["eval_period"])
-        self.cfg["split"] = float(param_map["split"])
-        self.cfg["conf_thr"] = float(param_map["conf_thr"])
-        self.cfg["expert_mode"] = strtobool(param_map["expert_mode"])
+        self.cfg["dataset_split_ratio"] = float(param_map["dataset_split_ratio"])
+        self.cfg["conf_thres"] = float(param_map["conf_thres"])
+        self.cfg["use_custom_model"] = strtobool(param_map["use_custom_model"])
         self.cfg["output_folder"] = param_map["output_folder"]
-        self.cfg["custom_cfg"] = param_map["custom_cfg"]
+        self.cfg["config"] = param_map["config"]
 
 
 # --------------------
@@ -99,7 +99,7 @@ class TrainSparseinst(dnntrain.TrainProcess):
         plugin_folder = os.path.dirname(os.path.abspath(__file__))
 
         dataset = input.data
-        register_datasets(dataset, param.cfg["split"], True)
+        register_datasets(dataset, param.cfg["dataset_split_ratio"], True)
 
         # Current datetime is used as folder name
         str_datetime = datetime.now().strftime("%d-%m-%YT%Hh%Mm%Ss")
@@ -113,7 +113,7 @@ class TrainSparseinst(dnntrain.TrainProcess):
         if not os.path.isdir(self.out_folder):
             os.makedirs(self.out_folder, exist_ok=True)
 
-        if not param.cfg["expert_mode"]:
+        if not param.cfg["use_custom_model"]:
             model_folder = os.path.join(plugin_folder, "models")
             if not os.path.isdir(model_folder):
                 os.mkdir(model_folder)
@@ -122,16 +122,16 @@ class TrainSparseinst(dnntrain.TrainProcess):
                 gdrive_download(model_zoo[param.cfg["model_name"]], model_weights)
             args = Namespace()
             args.opts = ["MODEL.WEIGHTS", model_weights]
-            args.confidence_threshold = param.cfg["conf_thr"]
+            args.confidence_threshold = param.cfg["conf_thres"]
             args.input = ""
             args.config_file = os.path.join(plugin_folder, "configs", param.cfg["model_name"]+".yaml")
             cfg = setup_cfg(args, param)
         else:
-            if os.path.isfile(param.cfg["custom_cfg"]):
-                with open(param.cfg["custom_cfg"], 'r') as f:
+            if os.path.isfile(param.cfg["config"]):
+                with open(param.cfg["config"], 'r') as f:
                     cfg = CfgNode.load_cfg(f.read())
             else:
-                print("File {} doesn't exist".format(param.cfg["custom_cfg"]))
+                print("File {} doesn't exist".format(param.cfg["config"]))
                 self.end_task_run()
                 return
 

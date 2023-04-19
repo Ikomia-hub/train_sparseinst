@@ -51,19 +51,19 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
         self.spin_eval_period = pyqtutils.append_spin(self.gridLayout, "Evaluation period",
                                                       self.parameters.cfg["eval_period"])
         self.double_split = pyqtutils.append_double_spin(self.gridLayout, "Split train/test ratio",
-                                                         self.parameters.cfg["split"], min=0, max=1, step=0.01,
+                                                         self.parameters.cfg["dataset_split_ratio"], min=0, max=1, step=0.01,
                                                          decimals=2)
-        self.double_conf_thr = pyqtutils.append_double_spin(self.gridLayout, "Confidence threshold",
-                                                            self.parameters.cfg["conf_thr"], min=0, max=1, step=0.01,
+        self.double_conf_thres = pyqtutils.append_double_spin(self.gridLayout, "Confidence threshold",
+                                                            self.parameters.cfg["conf_thres"], min=0, max=1, step=0.01,
                                                             decimals=2)
         self.browse_output_folder = pyqtutils.append_browse_file(self.gridLayout, label="Output folder",
                                                                  path=self.parameters.cfg["output_folder"],
                                                                  tooltip="Select folder",
                                                                  mode=QFileDialog.Directory)
         self.check_expert_mode = pyqtutils.append_check(self.gridLayout, "Expert mode",
-                                                        self.parameters.cfg["expert_mode"])
+                                                        self.parameters.cfg["use_custom_model"])
         self.check_expert_mode.stateChanged.connect(self.on_check_expert_mode)
-        self.browse_custom_cfg = pyqtutils.append_browse_file(self.gridLayout, path=self.parameters.cfg["custom_cfg"],
+        self.browse_custom_cfg = pyqtutils.append_browse_file(self.gridLayout, path=self.parameters.cfg["config"],
                                                               label="Custom cfg",
                                                               tooltip="Select file",
                                                               mode=QFileDialog.ExistingFile)
@@ -81,7 +81,7 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
         self.spin_batch_size.setVisible(not expert)
         self.spin_eval_period.setVisible(not expert)
         self.double_split.setVisible(not expert)
-        self.double_conf_thr.setVisible(not expert)
+        self.double_conf_thres.setVisible(not expert)
 
         self.browse_custom_cfg.setVisible(expert)
 
@@ -91,14 +91,14 @@ class TrainSparseinstWidget(core.CWorkflowTaskWidget):
         # Get parameters from widget
         # Example : self.parameters.windowSize = self.spinWindowSize.value()
         self.parameters.cfg["model_name"] = self.combo_model.currentText()
-        self.parameters.cfg["expert_mode"] = self.check_expert_mode.isChecked()
+        self.parameters.cfg["use_custom_model"] = self.check_expert_mode.isChecked()
         self.parameters.cfg["max_iter"] = self.spin_max_iter.value()
         self.parameters.cfg["batch_size"] = self.spin_batch_size.value()
         self.parameters.cfg["eval_period"] = self.spin_eval_period.value()
-        self.parameters.cfg["split"] = self.double_split.value()
-        self.parameters.cfg["conf_thr"] = self.double_conf_thr.value()
+        self.parameters.cfg["dataset_split_ratio"] = self.double_split.value()
+        self.parameters.cfg["conf_thres"] = self.double_conf_thres.value()
         self.parameters.cfg["output_folder"] = self.browse_output_folder.path
-        self.parameters.cfg["custom_cfg"] = self.browse_custom_cfg.path
+        self.parameters.cfg["config"] = self.browse_custom_cfg.path
         # Send signal to launch the process
         self.emit_apply(self.parameters)
 
