@@ -19,10 +19,9 @@
     </a> 
 </p>
 
-Train Sparseinst instance segmentation models
+Train Sparseinst instance segmentation models.
 
-[Insert illustrative image here. Image must be accessible publicly, in algorithm Github repository for example.
-<img src="images/illustration.png"  alt="Illustrative image" width="30%" height="30%">]
+![Sparseinst instance segmentation baseball game](https://github.com/hustvl/SparseInst/blob/main/assets/figures/000000006471.jpg?raw=true)
 
 ## :rocket: Use with Ikomia API
 
@@ -36,20 +35,25 @@ pip install ikomia
 
 #### 2. Create your workflow
 
-[Change the sample image URL to fit algorithm purpose]
-
 ```python
-import ikomia
 from ikomia.dataprocess.workflow import Workflow
 
 # Init your workflow
-wf = Workflow()
+wf = Workflow()    
 
-# Add algorithm
-algo = wf.add_task(name="train_sparseinst", auto_connect=True)
+# Add data loader
+coco = wf.add_task(name="dataset_coco")
+coco.set_parameters({
+    "json_file": "path/to/json/annotation/file",
+    "image_folder": "path/to/image/folder",
+    "task": "instance_segmentation",
+}) 
 
-# Run on your image  
-wf.run_on(url="example_image.png")
+# Add training algorithm
+train = wf.add_task(name="train_sparseinst", auto_connect=True)
+
+# Launch your training on your data
+wf.run()
 ```
 
 ## :sunny: Use with Ikomia Studio
@@ -62,56 +66,53 @@ Ikomia Studio offers a friendly UI with the same features as the API.
 
 ## :pencil: Set algorithm parameters
 
-[Explain each algorithm parameters]
+- **model_name** (str) - default 'sparse_inst_r50_giam_aug': Name of the Sparseinst model. Additional models are available:
+    - sparse_inst_r50vd_base
+    - sparse_inst_r50_giam
+    - sparse_inst_r50_giam_soft
+    - sparse_inst_r50_giam_aug
+    - sparse_inst_r50_dcn_giam_aug
+    - sparse_inst_r50vd_giam_aug
+    - sparse_inst_r50vd_dcn_giam_aug
+    - sparse_inst_r101_giam
+    - sparse_inst_r101_dcn_giam
+    - sparse_inst_pvt_b1_giam
+    - sparse_inst_pvt_b2_li_giam
 
-[Change the sample image URL to fit algorithm purpose]
+- **batch_size** (int) - default '8': Number of samples processed before the model is updated.
+- **max_iter** (int) - default '4000': Maximum number of iterations. 
+- **eval_period** (int) - default '50': Interval between evaluations.  
+- **dataset_split_ratio** (float) – default '0.9': Divide the dataset into train and evaluation sets ]0, 1[.
+- **output_folder** (str, *optional*): path to where the model will be saved. 
+
+**Parameters** should be in **strings format**  when added to the dictionary.
+
 
 ```python
-import ikomia
 from ikomia.dataprocess.workflow import Workflow
 
 # Init your workflow
-wf = Workflow()
+wf = Workflow()    
 
-# Add algorithm
-algo = wf.add_task(name="train_sparseinst", auto_connect=True)
+# Add data loader
+coco = wf.add_task(name="dataset_coco")
+coco.set_parameters({
+    "json_file": "path/to/json/annotation/file",
+    "image_folder": "path/to/image/folder",
+    "task": "instance_segmentation",
+}) 
 
-algo.set_parameters({
-    "param1": "value1",
-    "param2": "value2",
-    ...
-})
+# Add training algorithm
+train = wf.add_task(name="train_sparseinst", auto_connect=True)
+train.set_parameters({
+    "model_name": "sparse_inst_r50vd_base",
+    "batch_size": "4",
+    "max_iter": "1000",
+    "eval_period": "100",
+    "dataset_split_ratio": "0.8",
+}) 
 
-# Run on your image  
-wf.run_on(url="example_image.png")
-
+# Launch your training on your data
+wf.run()
 ```
 
-## :mag: Explore algorithm outputs
-
-Every algorithm produces specific outputs, yet they can be explored them the same way using the Ikomia API. For a more in-depth understanding of managing algorithm outputs, please refer to the [documentation](https://ikomia-dev.github.io/python-api-documentation/advanced_guide/IO_management.html).
-
-```python
-import ikomia
-from ikomia.dataprocess.workflow import Workflow
-
-# Init your workflow
-wf = Workflow()
-
-# Add algorithm
-algo = wf.add_task(name="train_sparseinst", auto_connect=True)
-
-# Run on your image  
-wf.run_on(url="example_image.png")
-
-# Iterate over outputs
-for output in algo.get_outputs()
-    # Print information
-    print(output)
-    # Export it to JSON
-    output.to_json()
-```
-
-## :fast_forward: Advanced usage 
-
-[optional]
