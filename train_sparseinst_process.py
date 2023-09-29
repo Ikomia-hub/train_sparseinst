@@ -201,6 +201,8 @@ class TrainSparseinstFactory(dataprocess.CTaskFactory):
         self.info.original_repository = "https://github.com/hustvl/SparseInst"
         # Keywords used for search
         self.info.keywords = "train, sparse, instance, segmentation, real-time, detectron2"
+        self.info.algo_type = core.AlgoType.TRAIN
+        self.info.algo_tasks = "INSTANCE_SEGMENTATION"
 
     def create(self, param=None):
         # Create process object
