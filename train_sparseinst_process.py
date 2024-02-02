@@ -186,7 +186,7 @@ class TrainSparseinstFactory(dataprocess.CTaskFactory):
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Segmentation"
         self.info.icon_path = "icons/sparseinst.png"
-        self.info.version = "1.1.0"
+        self.info.version = "1.1.1"
         # self.info.icon_path = "your path to a specific icon"
         self.info.authors = "Cheng, Tianheng and Wang, Xinggang and Chen, Shaoyu and Zhang, Wenqiang and Zhang, " \
                             "Qian and Huang, Chang and Zhang, Zhaoxiang and Liu, Wenyu "
